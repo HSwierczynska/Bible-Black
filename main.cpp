@@ -1,6 +1,8 @@
 #include <iostream>
 
+#include <cryptopp/hex.h> 
+
 int main() {
-  std::cout<<"derp"<<std::endl;
+  
   return 5;
 }
