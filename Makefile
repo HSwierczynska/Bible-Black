@@ -1,20 +1,29 @@
 CPP=g++
-CPPFLAGS= -std=c++11 -ggdb -w
-SOURCES=main.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
-INCLUDE=-I include -I include/external
-LIBDIRS=-L lib
-LIBS= -lcryptopp
+
 EXE=bibleblack
 
-all: $(SOURCES) $(EXE)
+BUILD_DIR=build
+SRC_DIRS=src
 
-$(EXE): $(OBJECTS)
-	$(CPP) $(OBJECTS) $(LIBDIRS) $(LIBS) -o $@
+SRCS=$(wildcard $(SRC_DIRS)/*.cpp)
+OBJS=$(addprefix obj/, $(notdir $(SRCS:.cpp=.o)))
 
-.cpp.o:
-	$(CPP) $(CPPFLAGS) $(INCLUDE) -c $*.cpp
+INC_DIRS=include/external include
+INC_FLAGS=$(addprefix -I,$(INC_DIRS))
 
+LIB_DIRS=-L lib
+LIBS=-lcryptopp
+
+CPPFLAGS=-std=c++11 -ggdb -w -Wall
+
+all: obj/$(EXE)
+
+obj/$(EXE): $(OBJS)
+	$(CPP) $(CPPFLAGS) $(OBJS) -o $@ $(LIB_DIRS) $(LIBS)
+
+$(OBJS): $(SRCS)
+	$(CPP) $(CPPFLAGS) $(INC_FLAGS) -c $(patsubst %.o,%.cpp,$(subst obj,src,$@)) -o $@
+
+.PHONY: clean
 clean:
-	rm $(EXE)
-	rm *.o
+	$(RM) $(EXE) $(OBJS)
